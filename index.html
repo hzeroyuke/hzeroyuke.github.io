@@ -1,35 +1,142 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>hzeroyuke</title>
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
-    }
-    .card {
-      text-align: center;
-      padding: 3rem 4rem;
-      border: 1px solid #334155;
-      border-radius: 16px;
-      background: #1e293b;
-    }
-    h1 { margin: 0 0 0.5rem; font-size: 2.5rem; }
-    p { margin: 0; color: #94a3b8; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yuke Zhao</title>
+<meta name="description" content="Yuke Zhao — Master's student at Zhejiang University, ZIP Lab. Agents, World Models, Multimodal.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Fraunces:ital,opsz,wght,WONK@0,9..144,300..900,0;0,9..144,300..900,1;1,9..144,300..900,0&family=Newsreader:ital,opsz,wght@0,6..72,200..600;1,6..72,200..600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
 </head>
 <body>
-  <div class="card">
-    <h1>hzeroyuke</h1>
-    <p>个人主页建设中 · Under construction</p>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="#top" class="nav-home">Homepage</a>
+    <a href="#about">About</a>
+    <a href="#news">News</a>
+    <a href="#research">Research</a>
+    <a href="#opensource">Open Source</a>
+    <a href="#education">Education</a>
   </div>
+</nav>
+
+<div class="layout" id="top">
+
+  <aside class="sidebar">
+    <div class="author">
+      <div class="author-avatar">
+        <img src="assets/avatar.svg" alt="Yuke Zhao">
+      </div>
+      <h1 class="author-name">Yuke Zhao <span class="cn">赵育课</span></h1>
+      <p class="author-affil">Master's Student,<br>Zhejiang University</p>
+      <p class="author-affil-sub">ZIP Lab</p>
+      <ul class="author-links">
+        <li><a href="mailto:yukezhao37@gmail.com">Email</a></li>
+        <li><a href="https://github.com/hzeroyuke" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="content">
+
+  <section class="about" id="about">
+    <p class="bio">
+      I am a first-year Master's student at <strong>ZIP Lab</strong>
+      (Zhuang Intelligent Processing Lab), <strong>Zhejiang University</strong>.
+      I earned my B.Eng. in Software Engineering at Zhejiang University in 2026.
+    </p>
+    <p class="bio">
+      My research interests include <strong>Agents</strong>, <strong>World Models</strong>,
+      and <strong>Multimodal</strong> understanding and generation. I am particularly
+      interested in how world models can be evaluated faithfully and how they can serve
+      as environments for training capable agents.
+    </p>
+    <p class="bio bio-cta">
+      Feel free to <a href="mailto:yukezhao37@gmail.com">reach out</a> if you'd like to discuss research or collaborate.
+    </p>
+  </section>
+
+  <section class="news" id="news">
+    <h2>News</h2>
+    <ul>
+      <li><span class="date">2026.09</span> Started my Master's at <strong>Zhejiang University</strong>, ZIP Lab.</li>
+      <li><span class="date">2026.06</span> <em>WorldOlympiad</em> released on arXiv.</li>
+      <li><span class="date">2026.06</span> Received my B.Eng. in Software Engineering from <strong>Zhejiang University</strong>.</li>
+      <li><span class="date">2026.01</span> <em>TempFlow-GRPO</em> accepted by <strong>ICLR 2026</strong>.</li>
+    </ul>
+  </section>
+
+  <section class="pubs" id="research">
+    <h2>Research</h2>
+
+    <div class="thread">
+      <h3 class="thread-title">World Models</h3>
+      <p class="thread-desc">Evaluating whether world models truly obey physics, geometry and interaction — not just look good.</p>
+
+      <div class="pub">
+        <div class="pub-thumb"><img src="assets/fig_worldolympiad.png" alt="WorldOlympiad"></div>
+        <div class="pub-body">
+          <p class="pub-title"><a href="https://arxiv.org/abs/2606.11129" target="_blank" rel="noopener">WorldOlympiad: Can Your World Model Survive a Triathlon?</a></p>
+          <p class="pub-authors"><strong>Yuke Zhao</strong>, Wangbo Zhao, Weijie Wang, Zeyu Zhang, Dakai An, Akide Liu, Yinghao Yu, Jiasheng Tang, Fan Wang, Wei Wang, Bohan Zhuang</p>
+          <p class="pub-venue"><span class="badge first">First Author</span> <span class="badge report">Preprint</span></p>
+          <p class="pub-tldr">A triathlon-style benchmark built from 1,000 long videos that diagnoses video world models on physical faithfulness, geometric consistency and interaction fidelity, revealing systematic failure modes across 8 state-of-the-art pipelines.</p>
+          <p class="pub-links"><a href="https://arxiv.org/abs/2606.11129" target="_blank" rel="noopener">Paper</a> <span class="sep">·</span> <a href="https://github.com/alibaba-damo-academy/WorldOlympiad" target="_blank" rel="noopener">Code</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="thread">
+      <h3 class="thread-title">Multimodal Generation</h3>
+      <p class="thread-desc">RL alignment for generative flow models.</p>
+
+      <div class="pub">
+        <div class="pub-thumb"><img src="assets/fig_tempflow.png" alt="TempFlow-GRPO"></div>
+        <div class="pub-body">
+          <p class="pub-title"><a href="https://arxiv.org/abs/2508.04324" target="_blank" rel="noopener">TempFlow-GRPO: When Timing Matters for GRPO in Flow Models</a></p>
+          <p class="pub-authors">Xiaoxuan He, Siming Fu, <strong>Yuke Zhao</strong>, Wanli Li, Jian Yang, Dacheng Yin, Fengyun Rao, Bo Zhang</p>
+          <p class="pub-venue"><span class="badge conf">ICLR 2026</span></p>
+          <p class="pub-tldr">A temporally-aware RL framework for flow-matching models, using trajectory branching and noise-aware weighting for stabler alignment.</p>
+          <p class="pub-links"><a href="https://arxiv.org/abs/2508.04324" target="_blank" rel="noopener">Paper</a> <span class="sep">·</span> <a href="https://tempflowgrpo.github.io/" target="_blank" rel="noopener">Project</a> <span class="sep">·</span> <a href="https://github.com/Shredded-Pork/TempFlow-GRPO" target="_blank" rel="noopener">Code</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pubs" id="opensource">
+    <h2>Open-Source Projects</h2>
+
+    <div class="pub no-thumb">
+      <div class="pub-body">
+        <p class="pub-title"><a href="https://github.com/OpenDCAI/OpenWorldLib" target="_blank" rel="noopener">OpenWorldLib: A Unified Codebase and Definition of Advanced World Models</a></p>
+        <p class="pub-venue"><span class="badge contrib">Contributor</span></p>
+        <p class="pub-tldr">A unified, extensible codebase for advanced world models from the OpenDCAI community, standardizing model definitions, training and evaluation across fragmented world-model research.</p>
+        <p class="pub-links"><a href="https://github.com/OpenDCAI/OpenWorldLib" target="_blank" rel="noopener">Code</a> <span class="sep">·</span> <a href="https://arxiv.org/abs/2604.04707" target="_blank" rel="noopener">Paper</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="misc" id="education">
+    <h2>Education</h2>
+    <ul class="edu">
+      <li>
+        <span class="edu-logo"><img src="assets/zju.png" alt="ZJU"></span>
+        <span class="edu-text"><strong>Zhejiang University</strong> — Master's Student, ZIP Lab <span class="edu-date">Sep 2026 – Present</span></span>
+      </li>
+      <li>
+        <span class="edu-logo"><img src="assets/zju.png" alt="ZJU"></span>
+        <span class="edu-text"><strong>Zhejiang University</strong> — B.Eng. in Software Engineering <span class="edu-date">Sep 2022 – Jun 2026</span></span>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>Last updated September 2026 · Built with plain HTML/CSS.</p>
+  </footer>
+
+  </main>
+</div>
 </body>
 </html>
