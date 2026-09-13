@@ -798,3 +798,7 @@ footer {
 .topnav-minimal .nav-home,
 .topnav-minimal .active { color: var(--ink); }
 .topnav-minimal .active::after { transform: scaleX(1); }
+
+/* ---- Contact link icons ---- */
+.author-links a { display: inline-flex; align-items: center; gap: 7px; }
+.link-ico { flex: 0 0 auto; opacity: 0.85; }
