@@ -802,3 +802,156 @@ footer {
 /* ---- Contact link icons ---- */
 .author-links a { display: inline-flex; align-items: center; gap: 7px; }
 .link-ico { flex: 0 0 auto; opacity: 0.85; }
+
+/* ---- Long-form research note ---- */
+.blog-kicker,
+.article-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pop-blue);
+  font-weight: 700;
+}
+.blog-kicker { margin-bottom: 0.55rem; }
+.blog-post.featured { border-left: 3px solid var(--pop-blue); padding-left: 1.25rem; }
+
+.article-head { margin-bottom: 2.4rem; }
+.article-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.8rem;
+  color: var(--faint);
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.18rem;
+}
+.article-back:hover { color: var(--ink); border-bottom-color: var(--ink); }
+.article-title {
+  max-width: none;
+  font-family: var(--font-display);
+  font-size: 4.4rem;
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  color: var(--ink);
+  margin-bottom: 1.25rem;
+  white-space: nowrap;
+}
+.article-dek {
+  max-width: none;
+  color: var(--soft);
+  font-size: 1.18rem;
+  line-height: 1.55;
+  margin-bottom: 0.9rem;
+  white-space: nowrap;
+}
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.7rem;
+  align-items: center;
+  color: var(--faint);
+  font-family: var(--font-ui);
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+.article-meta .sep { color: var(--line); }
+
+.article-toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0 0 2.3rem;
+  padding: 0.8rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.article-toc a {
+  color: var(--soft);
+  font-family: var(--font-ui);
+  font-size: 0.76rem;
+  font-weight: 600;
+  border-bottom: 1px dotted var(--line);
+}
+.article-toc a:hover { color: var(--pop-blue); border-bottom-color: var(--pop-blue); }
+
+.article-body { max-width: 74ch; }
+.article-body h2 {
+  margin: 2.8rem 0 1.05rem;
+  padding: 0 0 0.5rem;
+  border-bottom: 1.5px solid var(--ink);
+  font-size: 1.62rem;
+  letter-spacing: -0.025em;
+}
+.article-body h2:first-child { margin-top: 0; }
+.article-body h2::before {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin: 0 0.42em 0.06em 0;
+  background: var(--pop-amber);
+}
+.article-body p { color: var(--soft); margin-bottom: 1.05rem; }
+.article-body strong { color: var(--ink); font-weight: 650; }
+.article-body em { color: var(--ink); }
+.article-body blockquote {
+  margin: 1.45rem 0;
+  padding: 0.8rem 1rem 0.8rem 1.15rem;
+  border-left: 3px solid var(--pop-amber);
+  background: rgba(224, 161, 43, 0.08);
+  color: var(--soft);
+  font-size: 0.98em;
+}
+.article-body ul { margin: 0.3rem 0 1.25rem 1.3rem; color: var(--soft); }
+.article-body li { padding: 0.18rem 0; }
+.article-body li::marker { color: var(--pop-blue); }
+.article-equation {
+  margin: 1.35rem 0;
+  padding: 0.2rem 0;
+  overflow-x: auto;
+  color: var(--ink);
+  text-align: center;
+}
+.article-figure {
+  margin: 1.7rem 0 1.9rem;
+  padding: 0.55rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+}
+.article-figure img { display: block; width: 100%; height: auto; }
+.article-figure figcaption {
+  padding: 0.45rem 0.35rem 0.1rem;
+  color: var(--faint);
+  font-family: var(--font-ui);
+  font-size: 0.67rem;
+  line-height: 1.4;
+}
+.article-note {
+  color: var(--faint) !important;
+  font-size: 0.95em;
+  border-left: 2px solid var(--line);
+  padding-left: 1rem;
+}
+.article-references { list-style: none; margin-left: 0 !important; }
+.article-references li { padding-left: 1.1rem; position: relative; }
+.article-references li::before {
+  content: "↳";
+  position: absolute;
+  left: 0;
+  color: var(--pop-blue);
+}
+.article-references a { color: var(--soft); text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
+.article-references a:hover { color: var(--pop-blue); text-decoration-color: var(--pop-blue); }
+
+@media (max-width: 700px) {
+  .article-title { max-width: 100%; font-size: 3rem; white-space: normal; }
+  .article-dek { white-space: normal; }
+  .article-body h2 { font-size: 1.45rem; }
+}
