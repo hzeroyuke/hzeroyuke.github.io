@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Latent Space 的二三事 · Yuke Zhao</title>
-<meta name="description" content="从流形假设出发，重新看 VAE、Flow Matching 与 Pixel Space Generation。">
+<meta name="description" content="尝试分析 Pixel Space、VAE 和 RAE 的特征，在生成模型的视角下思考这些 space。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Fraunces:ital,opsz,wght,WONK@0,9..144,300..900,0;0,9..144,300..900,1;1,9..144,300..900,0&family=Newsreader:ital,opsz,wght@0,6..72,200..600;1,6..72,200..600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -47,8 +47,8 @@
         <a class="article-back" href="blog.html">&larr; All notes</a>
         <p class="article-kicker">Research note / September 2026</p>
         <h1 class="article-title">Latent Space 的二三事</h1>
-        <p class="article-dek">从流形假设出发，重新看 VAE、Flow Matching 与 Pixel Space Generation。</p>
-        <p class="article-meta"><span>Yuke Zhao</span><span class="sep">&middot;</span><span>12 min read</span><span class="sep">&middot;</span><span>研究笔记</span></p>
+        <p class="article-dek">尝试分析 Pixel Space、VAE 和 RAE 的特征，在生成模型的视角下思考这些 space。</p>
+        <p class="article-meta"><span>Yuke Zhao</span><span class="sep">&middot;</span><span>15 min read</span><span class="sep">&middot;</span><span>研究笔记</span></p>
       </header>
 
       <nav class="article-toc" aria-label="文章目录">
@@ -62,10 +62,10 @@
       <div class="article-body">
         <h2 id="prelude">0. 前置知识</h2>
         <p><strong>定义 Latent Space</strong></p>
-        <p>我们常说 latent space，但是其与我们常规理解中一个线性空间 n 维的不同。就比如说同一个 size 的 VAE 和 DINO，其都在同一个 n 维度的线性空间中，理论上其属于同一个空间，但是其代表不同的 latent space。</p>
+        <p>我们常说 latent space 并不是我们常规理解中一个 n 维空间。就比如说同一个 size 的 VAE 和 DINO，其都在同一个 n 维度的线性空间中，理论上其属于同一个空间，但是其代表不同的 latent space。</p>
         <p>以 256&times;256、三通道的 image 为例子，其存在的空间应该是一个 20w 维的空间，但是其中真实数据存在的区域是很稀疏的。简单的思考方式就是你从这个空间中随机填入数据，大概率就是获得一个噪声图像。这就是所谓流形假设，真实数据在高维空间的一个流形。</p>
         <blockquote>生成模型的本质，就是为了得到这个抽象的 pixel space 上的真实数据分布，但是我们对其只能进行采样，无法直接用某种方程或者某种模型来得到这个 pixel space。</blockquote>
-        <p>因此所谓 Latent Space，就是对这个 20w 维度的空间（Pixel Space）进行转换，随之其中真实数据所在的流形也跟着变换了。</p>
+        <p>因此所谓 Latent Space，就是对这个 20w 维度的空间（Pixel Space）进行转换，随之其中真实数据所在的流形也跟着变换了，主要是指的这个数据分布及其一系列特征。</p>
         <figure class="article-figure">
           <img src="assets/latent-space/manifold.png" alt="Pixel space and latent space manifold illustration" loading="lazy">
         </figure>
@@ -86,39 +86,46 @@
         <div class="article-equation">$$\boxed{\ u_t(x)=\frac{\hat x_1(x)-x}{\,1-t\,}\ },\qquad \text{且 score}\quad s_t(x)=\nabla\log p_t(x)=\frac{t\,\hat x_1(x)-x}{(1-t)^2}.\tag{\star}$$</div>
 
         <h2 id="manifold">1. 低维流形的困境</h2>
-        <p>flow model 本身的生成开销随着图片的分辨率快速增长，因此对于图片空间的压缩就成了很自然的选择。在 diffusion 出现的时候，auto-encoder 相关技术已经比较成熟了。</p>
+        <p>flow model 本身的生成开销随着图片的分辨率快速增长，因此对于图片空间的压缩就成了很自然的选择，在 diffusion 出现的时候，auto-encoder 相关技术已经比较成熟了。但是最终生成模型的选择不是 ae 而是 vae。</p>
         <p>但是为什么还需要在 ae 上加一个 v 呢，这就需要进一步思考一下了。</p>
         <p>从 flow model 的视角审视 Pixel Space，就是我们要从高斯分布中采样，移动到真实分布上。</p>
         <p>根据流形假设，真实图像所在的空间，只是 Pixel Space 上一个极其稀薄的流形。</p>
         <p>flow model 的 ODE 流是可逆变换，而我们在高斯分布作为一个满维的分布，无法完美迁移到真实分布这个低维流形上。直观来看的话就是我们的真实分布是一个 0 厚度的薄纸，但是我们 flow 出来的目标分布会很贴近它，但是保留一点厚度，因为其是满维的。</p>
         <p>这就导致了问题：我们能非常接近真实图像，但是没法达到真实图像分布。而因为 Flow Model 在 $t=1$ 的时候训练目标的奇异点，导致我们如果需要训一个良好的 Pixel Space Flow Model，实际上需要无限步的步数。VAE 的 KL 设计 + decoder 就尝试解决了这一点，其将处于真实图像分布上塑造成一个平滑的分布，我们在有限步数中达到这个平滑分布上，然后被 decoder 转换到真实数据分布上。</p>
         <blockquote>流形假设：真实数据并非均匀充满整个空间，而是集中分布在一个维度远低于 $D$ 的光滑低维流形 $\mathcal{M}$（及其邻域）之上，即存在内在维度 $d$。</blockquote>
-        <p>这下问题就简单了。我们需要一个空间，首先最好能做压缩，因为空间太大了，很多无意义的算力浪费在空间中。根据流形假设，Pixel Space 中真实图像分布是有更小的内在维度的；其次，我们希望我们落到真实图像附近的时候，能有一个方案将其拉回真实图像上。根据上述思路我们就推导出了 VAE。</p>
+        <p>这下问题就简单了。我们需要一个空间，首先最好能做压缩，因为 Pixel Space 太大了，很多无意义的算力浪费，根据流形假设，Pixel Space 中真实图像分布是有更小的内在维度的；其次，我们希望我们落到真实图像附近的时候，能有一个方案将其拉回真实图像上，根据上述思路我们就推导出了 VAE。</p>
         <p>我们来看看 VAE 的训练 Loss：</p>
         <div class="article-equation">$$\mathcal{L}_{VAE} = \underbrace{\mathbb{E}_{q(z|x)}[-\log p(x|z)]}_{\text{重建项}} + \beta \cdot \underbrace{D_{KL}\big(q(z|x)\,\|\,p(z)\big)}_{\text{正则项}}$$</div>
         <p>VAE 的监督包括主要两个部分，重建项和正则项。首先我们要保证重建，希望我们的压缩尽可能无损；其次我们做好 KL 正则，则希望其边际分布为高斯，这样子可以将其拉回真实数据分布上。</p>
         <p>但是在现在版本中，因为 KL 项和重建的效果有所冲突，而重建的质量也决定了生成的上限，因此 KL 往往都开得很小，Flow Model 本身已经承担了很多的逼近真实分布的任务。</p>
+        <figure class="article-figure">
+          <img src="assets/latent-space/vae-generation-table.png" alt="Generation performance comparison among different autoencoders" loading="lazy">
+        </figure>
+        <p>在之前一篇在 MAE 上做 diffusion 的工作中也有对 AE、SD-VAE 和 VAE 的分析，可以看到 SD-VAE 这种低 KL 的 VAE，在抗干扰性和对生成模型的适配程度上，都相较于传统的 VAE 和 AE 有更好的表现。</p>
+        <figure class="article-figure">
+          <img src="assets/latent-space/latent-robustness.png" alt="Robustness to noise perturbation in latent space" loading="lazy">
+        </figure>
 
         <h2 id="vae">2. 为什么 VAE 仍然不够</h2>
         <p>VAE 的数据分布满足了压缩和分布平滑的优良特性，确实也适合生成任务，但是对于 condition 生成，还是有问题。</p>
         <p>我们知道 VAE 的监督是两个，一个压缩，一个 KL；实际上而言，这给 latent 空间的自由度仍然非常大，因此也有很多人尝试在 VAE 的 latent 空间上做一些正则等调整，来使其变得更优良。</p>
         <p>了解 VAE 部分的人都知道，VAE 的重建指标和后续 flow model 在上面的训练效果并不相关联。人们想过很多 tricks 来调整 VAE，使其有更好的重建，但是结果是 VAE 上的 flow model 效果却并没有变得更好。</p>
         <blockquote>前段时间 Kling 那边有一篇文章，详细分析了哪些指标可以有效衡量 VAE 适配生成模型的程度，也就是所谓的好的 latent。下述指标就来自于这篇文章。</blockquote>
-        <p>我们对于 VAE latent space 适配 flow model 的程度做一个良好的定义：对于一个给定的 FID 值，生成模型在上面训到这个 FID 值所需的时间，所需时间越少，自然这个空间越适合 flow model 学习。</p>
+        <p>我们对于 VAE latent space 适配 flow model 的程度做一个良好的定义：对于一个给定的 FID 值，生成模型在上面训到这个 FID 值所需的时间，所需时间越少，自然这个空间越适合 flow model 学习。这也就是所谓的 Diffusability，那么如何去提升这个 Diffusability 呢。</p>
         <div class="article-equation">$$\mathcal{L}_{\text{FM}}(\theta)=\mathbb{E}_{t,\,x_0,\,x_1}\Big\|\,u_\theta(x_t,t)-\big(x_1-x_0\big)\Big\|^2 .$$</div>
         <p>回归到 flow model 的目标，它是在学习空间上某个点穿过这个点所有的速度的平均。假设我们是无限步的生成，选取平均其实无所谓，但是在有限步的生成中，学习平均就会有误差，这个误差自然是越小越好：</p>
         <div class="article-equation">$$\operatorname{Var}\big(\,x_1-x_0\ \big|\ x_t=x\,\big)$$</div>
-        <p>从直观上理解也非常合理，既然要用类别进行生成，那么自然同一类聚集在一个地方。假设一张猫的图片一个在南，一个在北，其学习出来的速度就会与真实偏差很大。</p>
         <figure class="article-figure">
           <img src="assets/latent-space/vae-variance.png" alt="Variance of flow matching targets in latent space" loading="lazy">
         </figure>
+        <p>在分类生成任务上，某类图像在 latent space 上分布越是集中，其 flow model 学出来的速度和真实速度相比就越小，自然收敛就越快。</p>
         <p>以下是该论文中，针对各项 VAE 指标做的关联性验证。</p>
         <figure class="article-figure">
           <img src="assets/latent-space/vae-metrics.png" alt="Correlation of VAE metrics with generation quality" loading="lazy">
         </figure>
-        <p>笔者曾经尝试过直接用 VIV 作为监督来优化 VAE，但是效果不太好。究其原因在于 VIV 的监督很简单也很好 hack，模型并不知道真正的语义组织的分布是怎么样的，因此只会在压缩各向异性上面 hack VIV。因此这个思路不如 VAVAE 中直接以 DINO 这些有良好语义结构的 vision encoder 对于 VAE 的监督。</p>
-        <p>包括 Minimax 的 VTP 上提到了让 VAE 进行持续优化的方案，也包括了通过 vision encoder 进行监督。</p>
-        <p>有了上述视角，VA-VAE、RAE 等工作的出发点就很好理解了：Vision Encoder 的先验可以有效帮助 latent space 变得适配 Diffusion。</p>
+        <p>笔者曾经尝试过直接用 VIV 作为监督来优化 VAE，但是效果不太好。究其原因在于 VIV 的监督很简单也很好 hack，模型并不知道真正的语义组织的分布是怎么样的，因此只会在压缩各向异性上面 hack VIV，因此这个思路不如 VAVAE 中直接以 DINO 这些有良好语义结构的 vision encoder 对于 VAE 的监督。</p>
+        <p>包括 Minimax 的 VTP 上提到了让 VAE 进行持续优化的方案，也包括了通过 DINO 这种自监督方案来学习语义结构。</p>
+        <p>有了上述视角，VA-VAE、RAE 等工作的出发点就很好理解了，Vision Encoder 的先验天然更加适配分类生成任务，可以有效加速生成模型的收敛。</p>
         <p class="article-note">待补充：做一个 latent 结构进行 DINO 训练，VIV 的变化的情况。</p>
 
         <h2 id="pixel">3. 回到 Pixel Space</h2>
@@ -141,13 +148,15 @@
 
         <h2 id="references">参考文章</h2>
         <ul class="article-references">
-          <li>VAE</li>
-          <li>RAE</li>
-          <li>Jit</li>
-          <li>VAVAE</li>
-          <li><a href="https://kexue.fm/archives/11428" target="_blank" rel="noopener">科学空间：相关讨论</a></li>
-          <li><a href="https://arxiv.org/pdf/2606.03578" target="_blank" rel="noopener">arXiv: 2606.03578</a></li>
-          <li>VTP</li>
+          <li>D. P. Kingma and M. Welling. “Auto-Encoding Variational Bayes.” ICLR, 2014. <a href="https://arxiv.org/abs/1312.6114" target="_blank" rel="noopener">arXiv:1312.6114</a></li>
+          <li>J. Ho, A. Jain, and P. Abbeel. “Denoising Diffusion Probabilistic Models.” NeurIPS, 2020. <a href="https://arxiv.org/abs/2006.11239" target="_blank" rel="noopener">arXiv:2006.11239</a></li>
+          <li>B. Zheng, N. Ma, S. Tong, and S. Xie. “Diffusion Transformers with Representation Autoencoders.” <a href="https://arxiv.org/abs/2510.11690" target="_blank" rel="noopener">arXiv:2510.11690</a>, 2025.</li>
+          <li>T. Li and K. He. “Back to Basics: Let Denoising Generative Models Denoise.” <a href="https://arxiv.org/abs/2511.13720" target="_blank" rel="noopener">arXiv:2511.13720</a>, 2025.</li>
+          <li>J. Yao, B. Yang, and X. Wang. “Reconstruction vs. Generation: Taming Optimization Dilemma in Latent Diffusion Models.” CVPR, 2025. <a href="https://arxiv.org/abs/2501.01423" target="_blank" rel="noopener">arXiv:2501.01423</a></li>
+          <li>苏剑林. “生成扩散模型漫谈（三十一）：预测数据而非噪声.” Scientific Spaces, 2025. <a href="https://kexue.fm/archives/11428" target="_blank" rel="noopener">kexue.fm/archives/11428</a></li>
+          <li>T. Zhong, X. Tian, X. Wang, X. Tao, and P. Wan. “Diffusing in the Right Space: A Systematic Study of Latent Diffusability.” <a href="https://arxiv.org/abs/2606.03578" target="_blank" rel="noopener">arXiv:2606.03578</a>, 2026.</li>
+          <li>J. Yao, Y. Song, Y. Zhou, and X. Wang. “Towards Scalable Pre-training of Visual Tokenizers for Generation.” <a href="https://arxiv.org/abs/2512.13687" target="_blank" rel="noopener">arXiv:2512.13687</a>, 2025.</li>
+          <li>J. Lee, J. Shin, H. Choi, and J. Lee. “Latent Diffusion Models with Masked AutoEncoders.” <a href="https://arxiv.org/abs/2507.09984" target="_blank" rel="noopener">arXiv:2507.09984</a>, 2025.</li>
         </ul>
       </div>
     </article>
